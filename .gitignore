@@ -9,3 +9,4 @@ src/js/*.js
 
 dist/
 tmp/
+*.zip

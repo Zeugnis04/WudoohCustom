@@ -264,7 +264,8 @@ export const DefaultWudoohStorage: WudoohStorage = {
     customFonts: []
 }
 
-export const runtime: (typeof chrome.runtime | typeof browser.runtime) = (() => isChromium ? chrome.runtime : browser.runtime)()
+export const runtime: (typeof chrome.runtime | typeof browser.runtime) =
+    (() => (isChromium || typeof browser === "undefined") ? chrome.runtime : browser.runtime)()
 
 // TODO: Below abstractions can be fully Promise calling if using MV3
 
@@ -337,8 +338,12 @@ export const tabs = {
         })
     },
     sendMessage(tabId: number, message: Message): void {
-        if (isChromium) chrome.tabs.sendMessage(tabId, message)
-        else browser.tabs.sendMessage(tabId, message)
+        // Tabs without our content script (chrome:// pages, tabs opened before install)
+        // have no receiver; read lastError / catch so Chrome doesn't log an error
+        if (isChromium) chrome.tabs.sendMessage(tabId, message, (): void => {
+            void chrome.runtime.lastError
+        })
+        else browser.tabs.sendMessage(tabId, message).catch(() => {})
     },
     async sendMessageAllTabs(message: Message): Promise<void> {
         (await this.queryAllTabs()).forEach((tab: Tab): void => {

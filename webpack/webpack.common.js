@@ -8,10 +8,8 @@ const srcDir = path.join(__dirname, "..", "src");
 
 export default {
     entry: {
-        common: path.join(srcDir, "common.ts"),
         background: path.join(srcDir, "background.ts"),
         popup: path.join(srcDir, "popup.ts"),
-        newpopup: path.join(srcDir, "newpopup.tsx"),
         custom_fonts: path.join(srcDir, "custom_fonts.ts"),
         main: path.join(srcDir, "main.ts"),
     },
